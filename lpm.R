@@ -13,8 +13,11 @@ lpm.estimation <- function(formula, data, weight, cluster) {
 
 
 results.symmetric.ir <- lapply(itc.symmetric.ir, function(f) {
-  lpm.estimation(formula = f, data = civey_taylor, weight = "Weight", cluster = "year_month")
+  lpm.estimation(formula = f, data = sample, weight = "Weight", cluster = "year_month")
 })
+
+
+
 
 results.asymmetric.ir <- lapply(itc.asymmetric.ir, function(f) {
   lpm.estimation(formula = f, data = civey_taylor, weight = "Weight", cluster = "year_month")

@@ -12,6 +12,13 @@ library(lmtest) # regression output with clustered standard errors
 ####                              Data Loading                             #####
 ################################################################################
 
+# sample.start.date <- as.Date("2021-06-01")
+# sample.end.date <- as.Date("2024-12-31")
+# civey_taylor$Day <- as.Date(civey_taylor$Day)
+# sample <- civey_taylor[civey_taylor$Day > sample.start.date & civey_taylor$Day < sample.end.date, ]
+
+
+
 # read data from Tatar and Wieland (2025)
 taylor_rates_Tatar <- read_excel("./Data/TR_Data_Update_202503.xlsx")
 
@@ -55,6 +62,10 @@ itc.symmetric.ir <- list(itc.base = as.formula(paste("Cred ~ ", paste("cpi_lag1_
                                                                                         paste(control.vars, collapse= "+")))),
                          itc.symmetric.hicp_neg0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
                                                                                         paste(control.vars, collapse= "+")))),
+                         itc.symmetric.hicp_neg0.5_no_infl = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + ", 
+                                                                                       paste(control.vars, collapse= "+")))),
+                         itc.symmetric.hicp_neg0.5_infl = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + cpi_lag1_dev + ", 
+                                                                                               paste(control.vars, collapse= "+")))),
                          itc.symmetric.hicp_neg1.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg1.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
                                                                                         paste(control.vars, collapse= "+")))),
                          itc.symmetric.gdpd_pos0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_gdpd_pos0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 

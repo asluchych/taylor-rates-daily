@@ -41,6 +41,8 @@ civey_taylor$cpi_lag1_dev_pos <- ifelse((civey_taylor$cpi_yoy_lag - 2) >= 0,
 civey_taylor$cpi_lag1_dev_neg <- ifelse((civey_taylor$cpi_yoy_lag - 2)  < 0, 
                                         abs(civey_taylor$cpi_yoy_lag - 2), 0)
 
+civey_taylor$cpi_lag1_dev <- civey_taylor$cpi_yoy_lag - 2
+
 civey_taylor$JobPosition <- relevel(civey_taylor$JobPosition, ref = "Not employed")
 civey_taylor$MaritalStatus <- relevel(civey_taylor$MaritalStatus, ref = "Single")
 civey_taylor$EmploymentStatus <- relevel(civey_taylor$EmploymentStatus, ref = "Not employed")
