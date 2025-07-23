@@ -50,7 +50,8 @@ lpm.hicp_pos0.5.robust <- coeftest(lpm.hicp_pos0.5, vcov =  vcovCL(lpm.hicp_pos0
 lpm.hicp_pos0.5.robust
 
 #### (3)  ####
-lpm.hicp_neg0.5 <- lm(itc.hicp_neg0.5, weights = Weight, data = civey_taylor)
+lpm.hicp_neg0.5 <- lm(as.formula(paste("Cred ~ ", paste("dr_dev_abs_tr_hicp_pos0.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                        paste(control.vars, collapse= "+")))), weights = Weight, data = civey_taylor)
 # warning: wrong standard errors not clustered at monthly level
 # summary(lpm.itd)
 
@@ -102,4 +103,9 @@ lpm.gdpd_neg1.5.robust <- coeftest(lpm.gdpd_neg1.5, vcov =  vcovCL(lpm.gdpd_neg1
                                                                    cluster = ~year_month))
 lpm.gdpd_neg1.5.robust
 AIC(lpm.gdpd_neg1.5.robust)
+
+
+##########
+
+
 

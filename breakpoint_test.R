@@ -2,21 +2,92 @@ library(strucchange)
 
 sample.end.date <- as.Date("2024-12-31")
 civey_taylor$Day <- as.Date(civey_taylor$Day)
-data <- civey_taylor[civey_taylor$Day < sample.end.date, ]
+breakpoint_data <- civey_taylor[civey_taylor$Day <= sample.end.date, ]
 
+break.date <- as.Date("2021-02-01")
 
 ################################################################################
-####                              Estimation                               #####
+####                              Estimation: full sample                  #####
 ################################################################################
 
 symmetric.model <- as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + cpi_lag1_dev + ", 
                                                                    paste(control.vars, collapse= "+"))))
 
-symmetric.results <- lm(symmetric.model, weights = Weight, data = data)
-summary(symmetric.results)
+symmetric.full.sample.results <- lm(symmetric.model, weights = Weight, data = breakpoint_data)
+summary(symmetric.full.sample.results)
 
-symmetric.results.robust <- coeftest(symmetric.results, vcov = vcovCL(symmetric.results, cluster = ~year_month))
-symmetric.results.robust
+symmetric.full.sample.results.robust <- coeftest(symmetric.full.sample.results, vcov = vcovCL(symmetric.full.sample.results, cluster = ~year_month))
+symmetric.full.sample.results.robust
+
+
+
+
+symmetric.model.cpi.dummy <- as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5 + I(cpi_lag1_over4_dummy*dr_dev_tr_hicp_neg0.5) + cpi_lag1_dev + ", 
+                                                     paste(control.vars, collapse= "+"))))
+symmetric.model.cpi.dummy.results <- lm(symmetric.model.cpi.dummy, weights = Weight, data = breakpoint_data)
+summary(symmetric.model.cpi.dummy.results)
+
+symmetric.model.cpi.dummy.results.robust <- coeftest(symmetric.model.cpi.dummy.results, vcov = vcovCL(symmetric.model.cpi.dummy.results, cluster = ~year_month))
+symmetric.model.cpi.dummy.results.robust
+
+
+
+
+symmetric.model.dr.cpi.interaction <- as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5 + I(cpi_lag1_dev*dr_dev_tr_hicp_neg0.5) + cpi_lag1_dev + ", 
+                                                               paste(control.vars, collapse= "+"))))
+symmetric.model.dr.cpi.interaction.results <- lm(symmetric.model.dr.cpi.interaction, weights = Weight, data = breakpoint_data)
+summary(symmetric.model.dr.cpi.interaction.results)
+
+symmetric.model.dr.cpi.interaction.results <- coeftest(symmetric.model.dr.cpi.interaction.results, vcov = vcovCL(symmetric.model.dr.cpi.interaction.results, cluster = ~year_month))
+symmetric.model.dr.cpi.interaction.results
+
+symmetric.model.cpi.dummy <- as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5 + I(cpi_lag1_over4_dummy*dr_dev_tr_hicp_neg0.5) + cpi_lag1_dev + ", 
+                                                               paste(control.vars, collapse= "+"))))
+symmetric.model.cpi.dummy.results <- lm(symmetric.model.cpi.dummy, weights = Weight, data = breakpoint_data)
+summary(symmetric.model.cpi.dummy.results)
+
+symmetric.model.cpi.dummy.results.robust <- coeftest(symmetric.model.cpi.dummy.results, vcov = vcovCL(symmetric.model.cpi.dummy.results, cluster = ~year_month))
+symmetric.model.cpi.dummy.results.robust
+
+
+
+
+
+
+################################################################################
+####                              Estimation:  before break                #####
+################################################################################
+
+before.break.sample.results <- lm(symmetric.model, weights = Weight, data = breakpoint_data[breakpoint_data$Day <= break.date, ])
+summary(before.break.sample.results)
+
+before.break.sample.results.robust <- coeftest(before.break.sample.results, vcov = vcovCL(before.break.sample.results, cluster = ~year_month))
+before.break.sample.results.robust
+
+
+################################################################################
+####                              Estimation:  after break                 #####
+################################################################################
+
+after.break.sample.results <- lm(symmetric.model, weights = Weight, data = breakpoint_data[breakpoint_data$Day > break.date, ])
+summary(after.break.sample.results)
+
+after.break.sample.results.robust <- coeftest(after.break.sample.results, vcov = vcovCL(after.break.sample.results, cluster = ~year_month))
+after.break.sample.results.robust
+
+################################################################################
+####                              Estimation:  Extended Model              #####
+################################################################################
+
+
+extended.model <- as.formula(paste("Cred ~ ", paste("I(cpi_lag1_over2_dummy*dr_dev_tr_hicp_neg0.5) + I(cpi_lag1_under2_dummy*dr_dev_tr_hicp_neg0.5) + cpi_lag1_dev_abs +", 
+                                                               paste(control.vars, collapse= "+"))))
+extended.model.results <- lm(extended.model, weights = Weight, data =  breakpoint_data)
+summary(extended.model.results)
+
+extended.model.results.robust <- coeftest(extended.model.results, vcov = vcovCL(extended.model.results, cluster = ~year_month))
+extended.model.results.robust
+
 
 ################################################################################
 ####                              Breakpoint Test                          #####
@@ -25,7 +96,7 @@ symmetric.results.robust
 breakpoint.model <- as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + cpi_lag1_dev |", 
                                                       paste(control.vars, collapse= "+"))))
 
-bp_partial <- breakpoints(breakpoint.model, breaks = 1, data = data)
+bp_partial <- breakpoints(breakpoint.model, breaks = 1, data = breakpoint_data)
 
 summary(bp_partial)
 plot(bp_partial)
@@ -36,7 +107,7 @@ plot(bp_partial)
 
 library(ggplot2)
 
-ggplot(data, aes(x = Day)) +
+ggplot(breakpoint_data, aes(x = Day)) +
   #### plot lines with legends via named values in aes() ####
 geom_line(aes(y = tr_hicp_neg0.5, color = "TR HICP (r* = -0.5)"), size = 2) +
   geom_line(aes(y = deposit_rate, color = "Deposit Rate"), size = 2) +
@@ -108,7 +179,7 @@ ggsave(
 
 
 
-ggplot(data, aes(x = Day)) +
+ggplot(breakpoint_data, aes(x = Day)) +
   #### plot lines with legends via named values in aes() ####
 geom_line(aes(y = dr_dev_tr_hicp_neg0.5, color = "TR HICP (r* = -0.5) - Deposit Rate"), size = 2) +
   geom_line(aes(y = cpi_lag1_dev, color = "CPI YoY (lagged) - 2"), size = 2) +
@@ -174,3 +245,11 @@ ggsave(
   dpi = 300                  
 )
 
+extended.model <- as.formula(paste("Cred ~ ", paste("I(cpi_lag1_under4_dummy*dr_dev_tr_hicp_neg0.5) + I(cpi_lag1_over4_dummy*dr_dev_tr_hicp_neg0.5) + 
+                                                    cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                    paste(control.vars, collapse= "+"))))
+extended.model.results <- lm(extended.model, weights = Weight, data = breakpoint_data)
+summary(extended.model.results)
+
+extended.model.results.robust <- coeftest(extended.model.results, vcov = vcovCL(extended.model.results, cluster = ~year_month))
+extended.model.results.robust
