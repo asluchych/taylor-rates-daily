@@ -12,38 +12,37 @@ library(lmtest) # regression output with clustered standard errors
 ####                              Data Loading                             #####
 ################################################################################
 
-# sample.start.date <- as.Date("2021-06-01")
-# sample.end.date <- as.Date("2024-12-31")
-# civey_taylor$Day <- as.Date(civey_taylor$Day)
-# sample <- civey_taylor[civey_taylor$Day > sample.start.date & civey_taylor$Day < sample.end.date, ]
-
-
+# start date: start of Civey survey,  January 16, 2019
+sample.start.date <- as.Date("2019-01-16")
+# start date: as in Coleman and Nautz (2025),  November 28, 2024
+sample.end.date <- as.Date("2024-11-28")
 
 # read data from Tatar and Wieland (2025)
 taylor_rates_Tatar <- read_excel("./Data/TR_Data_Update_202503.xlsx")
-
 # read deposit rate facility data from ECB
 ECB <- read.csv("./Data/ECB Data Portal_20250618081104.csv")
-
 # load civey data
 load("./Data/civey_april.RData")
 
 #  prepare data from Tatar and Wieland (2025)
 source("taylor_rates_Tatar_data_preparation.R")
-
 # prepare data from ECB
 source("ECB_data_preparation.R")
-
 # merge ECB and Tatar and Wieland (2025) data and add deposit rate deviations
 source("ECB_Tatar_merge.R")
-
-# add deposit rate, Taylor rates and their absolute deviations to Civey data
+# add deposit rate, Taylor rates and their deviations to Civey data
 source("civey_taylor_merge.R")
-
 # prepare data for estimation
 source("civey_taylor_data_preparation.R")
 
+# drop data not used for estimation and plotting
+rm(bigger_data, ECB, taylor_rates_Tatar,  taylor_rates_daily, taylor_rates_quarterly_to_daily)
 
+################################################################################
+####                            Create Graphs                              #####
+################################################################################
+# run to create graphs
+source("graphs.R")
 
 ################################################################################
 ####                           Specify Models                              #####
@@ -53,63 +52,24 @@ source("civey_taylor_data_preparation.R")
 control.vars <- c("Female", "East", "College", "Age50Plus", "JobPosition", 
                   "MaritalStatus", "EmploymentStatus")
 
-#### model with inflation target deviations: Coleman and Nautz (2025): Equation (3) ####
-
-# binary inflation target credibility: symmetric interest rate deviations
-itc.symmetric.ir <- list(itc.base = as.formula(paste("Cred ~ ", paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                       paste(control.vars, collapse= "+")))),
-                         itc.symmetric.hicp_pos0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_pos0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+")))),
-                         itc.symmetric.hicp_neg0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+")))),
-                         itc.symmetric.hicp_neg0.5_no_infl = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.symmetric.hicp_neg0.5_infl = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg0.5  + cpi_lag1_dev + ", 
-                                                                                               paste(control.vars, collapse= "+")))),
-                         itc.symmetric.hicp_neg1.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_hicp_neg1.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+")))),
-                         itc.symmetric.gdpd_pos0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_gdpd_pos0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+")))),
-                         itc.symmetric.gdpd_neg0.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_gdpd_neg0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+")))),
-                         itc.symmetric.gdpd_neg1.5 = as.formula(paste("Cred ~ ", paste("dr_dev_tr_gdpd_neg1.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                        paste(control.vars, collapse= "+"))))
-                         )
-
-
-itc.asymmetric.ir <- list(itc.base = as.formula(paste("Cred ~ ", paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                      paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.hicp_pos0.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_hicp_pos0.5  + dr_neg_dev_tr_hicp_pos0.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.hicp_neg0.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_hicp_neg0.5  + dr_neg_dev_tr_hicp_neg0.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.hicp_neg1.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_hicp_neg1.5  + dr_neg_dev_tr_hicp_neg1.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.gdpd_pos0.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_gdpd_pos0.5  + dr_neg_dev_tr_gdpd_pos0.5 + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.gdpd_neg0.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_gdpd_neg0.5   +  dr_neg_dev_tr_gdpd_neg0.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+")))),
-                         itc.asymmetric.gdpd_neg1.5 = as.formula(paste("Cred ~ ", paste("dr_pos_dev_tr_gdpd_neg1.5  +  dr_neg_dev_tr_gdpd_neg1.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                                                                       paste(control.vars, collapse= "+"))))
-)
-
+# Coleman and Nautz (2025)
+cn2025.formula <- as.formula(paste("Cred ~ ", paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                  paste(control.vars, collapse= "+"))))
+# Taylor rate deviations based on HICP with r* = -1.5 + Coleman and Nautz (2025)
+tr_hicp_neg1.5_dev_dr_abs.formula <- as.formula(paste("Cred ~ ", paste("tr_hicp_neg1.5_dev_dr_abs + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                    paste(control.vars, collapse= "+"))))
+# Taylor rate deviations based on HICP with r* = -0.5 + Coleman and Nautz (2025)
+tr_hicp_neg0.5_dev_dr_abs.formula <- as.formula(paste("Cred ~ ", paste("tr_hicp_neg0.5_dev_dr_abs + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                                       paste(control.vars, collapse= "+"))))
+# Taylor rate deviations based on HICP with r* = 0.5 + Coleman and Nautz (2025)
+tr_hicp_pos0.5_dev_dr_abs.formula <- as.formula(paste("Cred ~ ", paste("tr_hicp_pos0.5_dev_dr_abs + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                                       paste(control.vars, collapse= "+"))))
 ################################################################################
 ####                           Estimate Models                             #####
 ################################################################################
 # run to estimate linear probability models
 source("lpm.R")
 
-# run to estimate logit models
-source("logit.R")
-
-# run to estimate ordered logit models
-source("ordered.R")
-
-################################################################################
-####                            Create Graphs                              #####
-################################################################################
-# run to create graphs
-source("graphs.R")
 
 
 ################################################################################
@@ -149,66 +109,3 @@ civey$infl_expect_ord <- as.ordered(civey$infl_expect_ord)
 # change ordering of factor levels: A>ITCC>D
 civey$infl_expect_ord <- factor(civey$infl_expect_ord, levels = c("D", "ITC", "A"), 
                                  ordered = TRUE)
-
-################################################################################
-####                           Specify Models                              #####
-################################################################################
-
-# control variables
-control.vars <- c("Female", "East", "College", "Age50Plus", "JobPosition", 
-                  "MaritalStatus", "EmploymentStatus")
-
-
-
-#### model with inflation target deviations: Coleman and Nautz (2025): Equation (3) ####
-
-# binary inflation target credibility
-itc.m1 <- as.formula(paste("Cred ~ ", paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                           paste(control.vars, collapse= "+"))))
-# ordered response
-ordered.m1 <- as.formula(paste("infl_expect_ord ~ ",
-                               paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
-                                     paste(control.vars, collapse= "+"))))
-#### model with inflation target deviations and deviations of deposit rate from ####
-# Taylor rule implied rate
-
-# binary inflation target credibility
-itc.m2 <- as.formula(paste("Cred ~ ", 
-                           paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ir_dev +", 
-                                 paste(control.vars, collapse= "+"))))
-# ordered response
-ordered.m2 <- as.formula(paste("infl_expect_ord ~ ", 
-                               paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ir_dev +", 
-                                     paste(control.vars, collapse= "+"))))
-
-##### model with inflation target deviations, deviations of deposit ####
-# rate from Taylor rule implied rate and deflationary months
-
-# binary inflation target credibility:
-itc.m3 <- as.formula(paste("Cred ~ ", 
-                           paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ir_dev + cpi_lag1_dev_abs_defl +", 
-                                 paste(control.vars, collapse= "+"))))
-
-# ordered response
-ordered.m3 <- as.formula(paste("infl_expect_ord ~ ", 
-                               paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ir_dev + cpi_lag1_dev_abs_defl +", 
-                                     paste(control.vars, collapse= "+"))))
-
-################################################################################
-####                           Estimate Models                             #####
-################################################################################
-# run to estimate linear probability models
-source("lpm.R")
-
-# run to estimate logit models
-source("logit.R")
-
-# run to estimate ordered logit models
-source("ordered.R")
-
-################################################################################
-####                            Create Graphs                              #####
-################################################################################
-# run to create graphs
-source("graphs.R")
-

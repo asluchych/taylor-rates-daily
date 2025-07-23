@@ -1,9 +1,9 @@
-# add column Day to taylor_rates_daily_smooth for merging
-taylor_rates_daily_smooth <- taylor_rates_daily_smooth %>% 
+# column Day to taylor_rates_daily for merging
+taylor_rates_daily <- taylor_rates_daily %>% 
   mutate(
     Day = date,
   )
 
-# add columns from taylor_rates_daily_smooth to Civey data 
+# add columns from taylor_rates_daily to Civey data 
 civey_taylor <- bigger_data %>%
-  left_join(taylor_rates_daily_smooth, by = "Day")
+  left_join(taylor_rates_daily, by = "Day")

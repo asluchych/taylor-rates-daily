@@ -1,4 +1,4 @@
-# rename  columns to more sensible names
+# give more sensible names to columns
 taylor_rates_Tatar <- taylor_rates_Tatar %>% 
   rename(
     quarter = "...1",
@@ -30,7 +30,7 @@ taylor_rates_Tatar <- taylor_rates_Tatar %>%
   arrange(quarter)
 
 # create daily data based on quarterly data
-taylor_rates_daily_not_smooth <- taylor_rates_Tatar %>%
+taylor_rates_quarterly_to_daily <- taylor_rates_Tatar %>%
   mutate(
     # create column for first day of every quarter
     start_date = as.Date(quarter),
@@ -57,7 +57,7 @@ taylor_rates_daily_not_smooth <- taylor_rates_Tatar %>%
   select(-quarter) # remove quarter column
 
 # convert columns to numeric
-taylor_rates_daily_not_smooth <- taylor_rates_daily_not_smooth %>%
+taylor_rates_quarterly_to_daily <- taylor_rates_quarterly_to_daily %>%
   mutate(
     tr_hicp_pos0.5 = as.numeric(tr_hicp_pos0.5),
     tr_hicp_neg1.5 = as.numeric(tr_hicp_neg1.5),
@@ -66,8 +66,10 @@ taylor_rates_daily_not_smooth <- taylor_rates_daily_not_smooth %>%
   )
 
 
-# add lagged value (previous quarter) for each variable
-taylor_rates_daily_smooth <- taylor_rates_Tatar %>%
+# data.frame for interpolated daty:
+# copy data from Tatar and Wieland (2025)  and create columns for lagged values
+# (previous quarter) for each variable
+taylor_rates_daily <- taylor_rates_Tatar %>%
   mutate(
     tr_hicp_pos0.5_lag = lag(tr_hicp_pos0.5),
     tr_hicp_neg1.5_lag = lag(tr_hicp_neg1.5),
@@ -75,8 +77,8 @@ taylor_rates_daily_smooth <- taylor_rates_Tatar %>%
     tr_gdpd_neg1.5_lag = lag(tr_gdpd_neg1.5)
   )
 
-# create daily data based on quarterly data and interpolate data
-taylor_rates_daily_smooth <- taylor_rates_daily_smooth %>%
+# daily data based on quarterly data and interpolate data
+taylor_rates_daily <- taylor_rates_daily %>%
   # for each row
   rowwise() %>%
   mutate(
@@ -111,10 +113,9 @@ taylor_rates_daily_smooth <- taylor_rates_daily_smooth %>%
   ungroup() #remove the rowwise() structure
 
 
-# add version with natural rate of interest of -0.5
-taylor_rates_daily_smooth <- taylor_rates_daily_smooth %>%
+# Taylor-rule rate based on  natural rate of interest of -0.5
+taylor_rates_daily <- taylor_rates_daily %>%
   mutate(
     tr_hicp_neg0.5  = tr_hicp_pos0.5 - 1,
     tr_gdpd_neg0.5  = tr_gdpd_pos0.5 - 1,
   )
-

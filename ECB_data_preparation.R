@@ -1,4 +1,4 @@
-# rename  columns 
+# give more sensible names to columns 
 ECB <- ECB %>% 
   rename(
     date = "DATE",
@@ -7,6 +7,7 @@ ECB <- ECB %>%
 # drop TIME.PERIOD column
 ECB <- ECB %>% select(-TIME.PERIOD)
 
+# convert deposit_rate values to numeric and date to Date
 ECB <- ECB %>%
   mutate(
     deposit_rate = as.numeric(deposit_rate),

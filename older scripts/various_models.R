@@ -1,10 +1,3 @@
-sample.end.date <- as.Date("2024-11-31")
-civey_taylor$Day <- as.Date(civey_taylor$Day)
-working_data <- civey_taylor[civey_taylor$Day <= sample.end.date, ]
-
-working_data$dr_dev_abs_tr_hicp_neg1.5 <- abs(working_data$dr_dev_tr_hicp_neg1.5)
-working_data$dr_dev_abs_tr_hicp_neg0.5 <- abs(working_data$dr_dev_tr_hicp_neg0.5)
-working_data$dr_dev_abs_tr_hicp_pos0.5 <- abs(working_data$dr_dev_tr_hicp_pos0.5)
 
 lpm.base <- lm(as.formula(paste("Cred ~ ", paste("cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
                                                                paste(control.vars, collapse= "+")))), weights = Weight, data = working_data)

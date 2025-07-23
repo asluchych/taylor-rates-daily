@@ -1,3 +1,83 @@
+################################################################################
+####            Linear Probability Model: Coleman and Nautz (2025)         #####
+################################################################################
+cn2025.model <- lm(cn2025.formula, weights = Weight, data = civey_taylor)
+# warning: wrong standard errors not clustered at monthly level
+# summary(cn2025.model)
+# cluster standard errors at monthly level following  Abadie et al. (2023)
+cn2025.model.robust <- coeftest(cn2025.model, vcov =  vcovCL(cn2025.model, 
+                                                                   cluster = ~year_month))
+cn2025.model.robust
+
+
+################################################################################
+####  Linear Probability Models: Taylor rate deviations based on HICP with #####
+####                     r* = -1.5 + Coleman and Nautz (2025)              #####
+################################################################################
+tr_hicp_neg1.5_dev_dr_abs.model <- lm(tr_hicp_neg1.5_dev_dr_abs.formula, weights = Weight, data = civey_taylor)
+# warning: wrong standard errors not clustered at monthly level
+# summary(tr_hicp_neg1.5_dev_dr_abs.model)
+# cluster standard errors at monthly level following  Abadie et al. (2023)
+tr_hicp_neg1.5_dev_dr_abs.model.robust <- coeftest(tr_hicp_neg1.5_dev_dr_abs.model,
+                                                   vcov =  vcovCL(tr_hicp_neg1.5_dev_dr_abs.model, 
+                                                             cluster = ~year_month))
+tr_hicp_neg1.5_dev_dr_abs.model.robust
+
+################################################################################
+####  Linear Probability Models: Taylor rate deviations based on HICP with #####
+####                     r* = -0.5 + Coleman and Nautz (2025)              #####
+################################################################################
+tr_hicp_neg0.5_dev_dr_abs.model <- lm(tr_hicp_neg0.5_dev_dr_abs.formula, weights = Weight, data = civey_taylor)
+# warning: wrong standard errors not clustered at monthly level
+# summary(tr_hicp_neg0.5_dev_dr_abs.model)
+# cluster standard errors at monthly level following  Abadie et al. (2023)
+tr_hicp_neg0.5_dev_dr_abs.model.robust <- coeftest(tr_hicp_neg0.5_dev_dr_abs.model,
+                                                   vcov =  vcovCL(tr_hicp_neg0.5_dev_dr_abs.model, 
+                                                                  cluster = ~year_month))
+tr_hicp_neg0.5_dev_dr_abs.model.robust
+
+
+################################################################################
+####  Linear Probability Models: Taylor rate deviations based on HICP with #####
+####                     r* = 0.5 + Coleman and Nautz (2025)              #####
+################################################################################
+tr_hicp_pos0.5_dev_dr_abs.model <- lm(tr_hicp_pos0.5_dev_dr_abs.formula, weights = Weight, data = civey_taylor)
+# warning: wrong standard errors not clustered at monthly level
+# summary(tr_hicp_pos0.5_dev_dr_abs.model)
+# cluster standard errors at monthly level following  Abadie et al. (2023)
+tr_hicp_pos0.5_dev_dr_abs.model.robust <- coeftest(tr_hicp_pos0.5_dev_dr_abs.model,
+                                                   vcov =  vcovCL(tr_hicp_pos0.5_dev_dr_abs.model, 
+                                                                  cluster = ~year_month))
+tr_hicp_pos0.5_dev_dr_abs.model.robust
+
+length(tr_hicp_pos0.5_dev_dr_abs.model$residuals)
+
+
+
+
+
+
+
+
+
+
+#### (3)  ####
+lpm.hicp_neg0.5 <- lm(as.formula(paste("Cred ~ ", paste("dr_dev_abs_tr_hicp_pos0.5  + cpi_lag1_dev_pos + cpi_lag1_dev_neg + ", 
+                                                        paste(control.vars, collapse= "+")))), weights = Weight, data = civey_taylor)
+# warning: wrong standard errors not clustered at monthly level
+# summary(lpm.itd)
+
+# cluster standard errors at monthly level following  Abadie et al. (2023)
+lpm.hicp_neg0.5.robust <- coeftest(lpm.hicp_neg0.5, vcov =  vcovCL(lpm.hicp_neg0.5, 
+                                                                   cluster = ~year_month))
+lpm.hicp_neg0.5.robust
+AIC(lpm.hicp_neg0.5.robust)
+
+
+
+
+
+
 lpm.estimation <- function(formula, data, weight, cluster) {
   # Add weights column to a new local copy of data with fixed column name
   data$.__weight__. <- data[[weight]]

@@ -1,33 +1,7 @@
 ################################################################################
-####                              Graphs                                   #####
+####               Taylor Rate, HICP, r* = -0.5 vs deposit rate            #####
 ################################################################################
-
-#### HICP based Taylor rates smoothed vs not smoothed ####
-ggplot(taylor_rates_daily_smooth, aes(x = date)) +
-  #### add plot lines ####
-  geom_line(aes(y = tr_hicp_pos0.5), color = "blue", size = 2) +  
-  geom_line(aes(y = tr_hicp_neg1.5), color = "orange", size = 2) + 
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_pos0.5), 
-            color = "blue",  size = 1, linetype = 2) +  
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_neg1.5), 
-            color = "orange", size = 1, linetype = 2) +    
-  #### give axis names ####
-  labs(x = "Day", y = "Percent") +
-  #### adjust x axis ####
-  scale_x_date(
-    breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
-                       "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
-                       "2026-01-01", "2027-01-01")),
-    date_labels = "%d-%m-%Y", 
-    expand = expansion(mult = c(0.015, 0.0025))
-  ) +
-  #### adjust y axis ####
-  scale_y_continuous(
-    breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
-    expand = c(0, 0.5)
-  ) +
-  #### add custom lines ####
-  # add clearly (thickness of 0.5) visible y-axis
+ggplot(civey_taylor, aes(x = Day)) +
   geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
   # add missing grid line at y=3
   geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
@@ -39,239 +13,53 @@ ggplot(taylor_rates_daily_smooth, aes(x = date)) +
   geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
   # add border for start of projected data
   geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  #### fill the area for adjusted output gap ####
-  annotate("rect",
-           xmin = as.Date("2020-01-01"),
-           xmax = as.Date("2021-09-30"),
-           ymin = -Inf, ymax = Inf,
-           alpha = 0.2, fill = "lightgrey") +
-  #### fill the area for projected data ####
-  annotate("rect",
-           xmin = as.Date("2025-01-01"),
-           xmax = as.Date("2027-01-01"),
-           ymin = -Inf, ymax = Inf,
-           alpha = 0.2, fill = "lightpink") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
-    # y-axis font size
-    axis.text.y = element_text(size = 30), 
-    # axis title size
-    axis.title = element_text(size = 30), 
-    # plot title size
-    plot.title = element_text(size = 30, hjust = 0.5),
-  )
-# save plot
-ggsave(
-  filename = "./Plots/hicp_smooth_not_smooth.pdf",
-  plot = last_plot(),        
-  device = "pdf",
-  # plot dimensions (in inches)
-  width = 40, height = 8,   
-  # resolution
-  dpi = 300                  
-)
-
-#### HICP based Taylor rates smoothed vs not smoothed ####
-ggplot(taylor_rates_daily_smooth, aes(x = date)) +
   #### add plot lines ####
-geom_line(aes(y = tr_gdpd_pos0.5), color = "purple", size = 2, linetype = 5) +  
-  geom_line(aes(y = tr_gdpd_neg1.5), color = "brown4", size = 2, linetype = 5) + 
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_gdpd_pos0.5), 
-            color = "purple",  size = 1, linetype = 2) +  
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_gdpd_neg1.5), 
-            color = "brown4", size = 1, linetype = 2) +    
-  #### give axis names ####
-labs(x = "Day", y = "Percent") +
-  #### adjust x axis ####
-scale_x_date(
-  breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
-                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
-                     "2026-01-01", "2027-01-01")),
-  date_labels = "%d-%m-%Y", 
-  expand = expansion(mult = c(0.015, 0.0025))
-) +
-  #### adjust y axis ####
-scale_y_continuous(
-  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
-  expand = c(0, 0.5)
-) +
-  #### add custom lines ####
-# add clearly (thickness of 0.5) visible y-axis
-geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=3
-  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=7
-  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
-  # add border for start of adjusted output gap
-  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for end of adjusted output gap
-  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for start of projected data
-  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  #### fill the area for adjusted output gap ####
-annotate("rect",
-         xmin = as.Date("2020-01-01"),
-         xmax = as.Date("2021-09-30"),
-         ymin = -Inf, ymax = Inf,
-         alpha = 0.2, fill = "lightgrey") +
-  #### fill the area for projected data ####
-annotate("rect",
-         xmin = as.Date("2025-01-01"),
-         xmax = as.Date("2027-01-01"),
-         ymin = -Inf, ymax = Inf,
-         alpha = 0.2, fill = "lightpink") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
-    # y-axis font size
-    axis.text.y = element_text(size = 30), 
-    # axis title size
-    axis.title = element_text(size = 30), 
-    # plot title size
-    plot.title = element_text(size = 30, hjust = 0.5),
-  )
-# save plot
-ggsave(
-  filename = "./Plots/gdp_defl_smooth_not_smooth.pdf",
-  plot = last_plot(),        
-  device = "pdf",
-  # plot dimensions (in inches)
-  width = 40, height = 8,   
-  # resolution
-  dpi = 300                  
-)
-
-
-####  Taylor rates smoothed  ####
-ggplot(taylor_rates_daily_smooth, aes(x = date)) +
-  #### add plot lines ####
-geom_line(aes(y = tr_gdpd_pos0.5), color = "purple", size = 2, linetype = 5) +  
-  geom_line(aes(y = tr_gdpd_neg1.5), color = "brown4", size = 2, linetype = 5) + 
-  geom_line(aes(y = tr_hicp_pos0.5), color = "blue", size = 2) +  
-  geom_line(aes(y = tr_hicp_neg1.5), color = "orange", size = 2) +    
-  #### give axis names ####
-labs(x = "Day", y = "Percent") +
-  #### adjust x axis ####
-scale_x_date(
-  breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
-                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
-                     "2026-01-01", "2027-01-01")),
-  date_labels = "%d-%m-%Y", 
-  expand = expansion(mult = c(0.015, 0.0025))
-) +
-  #### adjust y axis ####
-scale_y_continuous(
-  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
-  expand = c(0, 0.5)
-) +
-  #### add custom lines ####
-# add clearly (thickness of 0.5) visible y-axis
-geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=3
-  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=7
-  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
-  # add border for start of adjusted output gap
-  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for end of adjusted output gap
-  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for start of projected data
-  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  #### fill the area for adjusted output gap ####
-annotate("rect",
-         xmin = as.Date("2020-01-01"),
-         xmax = as.Date("2021-09-30"),
-         ymin = -Inf, ymax = Inf,
-         alpha = 0.2, fill = "lightgrey") +
-  #### fill the area for projected data ####
-annotate("rect",
-         xmin = as.Date("2025-01-01"),
-         xmax = as.Date("2027-01-01"),
-         ymin = -Inf, ymax = Inf,
-         alpha = 0.2, fill = "lightpink") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
-    # y-axis font size
-    axis.text.y = element_text(size = 30), 
-    # axis title size
-    axis.title = element_text(size = 30), 
-    # plot title size
-    plot.title = element_text(size = 30, hjust = 0.5),
-  )
-# save plot
-ggsave(
-  filename = "./Plots/taylor_rates.pdf",
-  plot = last_plot(),        
-  device = "pdf",
-  # plot dimensions (in inches)
-  width = 40, height = 8,   
-  # resolution
-  dpi = 300                  
-)
-
-
-#### HICP +0.5, deposit rate and deviations ####
-ggplot(civey_taylor, aes(x = Day)) +
-  #### add plot lines ####
-geom_line(aes(y = tr_hicp_pos0.5), color = "blue", size = 2) +  
-  geom_line(aes(y = deposit_rate), color = "green", size = 2) + 
-  geom_line(aes(y = dr_dev_tr_hicp_pos0.5), 
-            color = "red",  size = 2) +  
+geom_line(aes(y = tr_hicp_neg0.5, color = "Taylor Rate, r* = -0.5"), size = 2) +  
+  geom_line(aes(y = deposit_rate, color = "Deposit Rate"), size = 2) + 
   #### give axis names ####
 labs(x = "Day", y = "Percent") +
   #### adjust x axis ####
 scale_x_date(
   breaks = as.Date(c("2019-01-01", "2020-01-01", "2021-01-01",
-                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
-                     "2026-01-01")),
+                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01")),
   date_labels = "%d-%m-%Y", 
-  expand = expansion(mult = c(0.03, 0.005))
+  expand = expansion(mult = c(0.05, 0.03))
 ) +
   #### adjust y axis ####
 scale_y_continuous(
-  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
-  expand = c(0, 0.5)
+  breaks = c( -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
+  expand = expansion(mult = c(0.1, 0.2))
 ) +
+  #### manual colors for legend items ####
+scale_color_manual(
+  values = c(
+    "Taylor Rate, r* = -0.5" = "blue",
+    "Deposit Rate" = "green"
+   ) 
+  ) + 
   #### add custom lines ####
 # add clearly (thickness of 0.5) visible y-axis
-geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=3
-  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
-  # add missing grid line at y=7
-  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
-  # add border for start of adjusted output gap
-  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for end of adjusted output gap
-  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
-  # add border for start of projected data
-  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
   #### fill the area for adjusted output gap ####
 annotate("rect",
          xmin = as.Date("2020-01-01"),
          xmax = as.Date("2021-09-30"),
          ymin = -Inf, ymax = Inf,
          alpha = 0.2, fill = "lightgrey") +
-  #### fill the area for projected data ####
-annotate("rect",
-         xmin = as.Date("2025-01-01"),
-         xmax = as.Date("2026-01-01"),
-         ymin = -Inf, ymax = Inf,
-         alpha = 0.2, fill = "lightpink") +
   theme_bw() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
-    # y-axis font size
-    axis.text.y = element_text(size = 30), 
-    # axis title size
-    axis.title = element_text(size = 30), 
-    # plot title size
-    plot.title = element_text(size = 30, hjust = 0.5),
+    panel.border = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 44),
+    axis.text.y = element_text(size = 44), 
+    axis.title = element_text(size = 44), 
+    plot.title = element_text(size = 44, hjust = 0.5),
+    legend.position = c(1, 1),
+    legend.justification = c("right", "top"),
+    legend.text = element_text(size = 44),
+    legend.title = element_text(size = 44)
   )
 # save plot
 ggsave(
-  filename = "./Plots/hicp_pos0.5_deposit_rate_dev.pdf",
+  filename = "./Plots/tr_hicp_neg0.5_vs_deposit_rate.pdf",
   plot = last_plot(),        
   device = "pdf",
   # plot dimensions (in inches)
@@ -974,6 +762,225 @@ ggplot(interest_daily_data, aes(x = date)) +
 ggsave(
   filename = "./plots/deposit_deviations.pdf",
   plot = last_plot(),       
+  device = "pdf",
+  # plot dimensions (in inches)
+  width = 40, height = 8,   
+  # resolution
+  dpi = 300                  
+)
+
+
+
+
+
+
+
+
+################################################################################
+####                              Graphs                                   #####
+################################################################################
+
+#### HICP based Taylor rates smoothed vs not smoothed ####
+ggplot(taylor_rates_daily_smooth, aes(x = date)) +
+  #### add plot lines ####
+geom_line(aes(y = tr_hicp_pos0.5), color = "blue", size = 2) +  
+  geom_line(aes(y = tr_hicp_neg1.5), color = "orange", size = 2) + 
+  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_pos0.5), 
+            color = "blue",  size = 1, linetype = 2) +  
+  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_neg1.5), 
+            color = "orange", size = 1, linetype = 2) +    
+  #### give axis names ####
+labs(x = "Day", y = "Percent") +
+  #### adjust x axis ####
+scale_x_date(
+  breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
+                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
+                     "2026-01-01", "2027-01-01")),
+  date_labels = "%d-%m-%Y", 
+  expand = expansion(mult = c(0.015, 0.0025))
+) +
+  #### adjust y axis ####
+scale_y_continuous(
+  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
+  expand = c(0, 0.5)
+) +
+  #### add custom lines ####
+# add clearly (thickness of 0.5) visible y-axis
+geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=3
+  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=7
+  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
+  # add border for start of adjusted output gap
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for end of adjusted output gap
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for start of projected data
+  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  #### fill the area for adjusted output gap ####
+annotate("rect",
+         xmin = as.Date("2020-01-01"),
+         xmax = as.Date("2021-09-30"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightgrey") +
+  #### fill the area for projected data ####
+annotate("rect",
+         xmin = as.Date("2025-01-01"),
+         xmax = as.Date("2027-01-01"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightpink") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
+    # y-axis font size
+    axis.text.y = element_text(size = 30), 
+    # axis title size
+    axis.title = element_text(size = 30), 
+    # plot title size
+    plot.title = element_text(size = 30, hjust = 0.5),
+  )
+# save plot
+ggsave(
+  filename = "./Plots/hicp_smooth_not_smooth.pdf",
+  plot = last_plot(),        
+  device = "pdf",
+  # plot dimensions (in inches)
+  width = 40, height = 8,   
+  # resolution
+  dpi = 300                  
+)
+
+#### HICP based Taylor rates smoothed vs not smoothed ####
+ggplot(taylor_rates_daily_smooth, aes(x = date)) +
+  #### add plot lines ####
+geom_line(aes(y = tr_gdpd_pos0.5), color = "purple", size = 2, linetype = 5) +  
+  geom_line(aes(y = tr_gdpd_neg1.5), color = "brown4", size = 2, linetype = 5) + 
+  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_gdpd_pos0.5), 
+            color = "purple",  size = 1, linetype = 2) +  
+  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_gdpd_neg1.5), 
+            color = "brown4", size = 1, linetype = 2) +    
+  #### give axis names ####
+labs(x = "Day", y = "Percent") +
+  #### adjust x axis ####
+scale_x_date(
+  breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
+                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
+                     "2026-01-01", "2027-01-01")),
+  date_labels = "%d-%m-%Y", 
+  expand = expansion(mult = c(0.015, 0.0025))
+) +
+  #### adjust y axis ####
+scale_y_continuous(
+  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
+  expand = c(0, 0.5)
+) +
+  #### add custom lines ####
+# add clearly (thickness of 0.5) visible y-axis
+geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=3
+  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=7
+  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
+  # add border for start of adjusted output gap
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for end of adjusted output gap
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for start of projected data
+  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  #### fill the area for adjusted output gap ####
+annotate("rect",
+         xmin = as.Date("2020-01-01"),
+         xmax = as.Date("2021-09-30"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightgrey") +
+  #### fill the area for projected data ####
+annotate("rect",
+         xmin = as.Date("2025-01-01"),
+         xmax = as.Date("2027-01-01"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightpink") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
+    # y-axis font size
+    axis.text.y = element_text(size = 30), 
+    # axis title size
+    axis.title = element_text(size = 30), 
+    # plot title size
+    plot.title = element_text(size = 30, hjust = 0.5),
+  )
+# save plot
+ggsave(
+  filename = "./Plots/gdp_defl_smooth_not_smooth.pdf",
+  plot = last_plot(),        
+  device = "pdf",
+  # plot dimensions (in inches)
+  width = 40, height = 8,   
+  # resolution
+  dpi = 300                  
+)
+
+####  Taylor rates smoothed  ####
+ggplot(taylor_rates_daily_smooth, aes(x = date)) +
+  #### add plot lines ####
+geom_line(aes(y = tr_gdpd_pos0.5), color = "purple", size = 2, linetype = 5) +  
+  geom_line(aes(y = tr_gdpd_neg1.5), color = "brown4", size = 2, linetype = 5) + 
+  geom_line(aes(y = tr_hicp_pos0.5), color = "blue", size = 2) +  
+  geom_line(aes(y = tr_hicp_neg1.5), color = "orange", size = 2) +    
+  #### give axis names ####
+labs(x = "Day", y = "Percent") +
+  #### adjust x axis ####
+scale_x_date(
+  breaks = as.Date(c("2018-01-01", "2019-01-01", "2020-01-01", "2021-01-01",
+                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01",
+                     "2026-01-01", "2027-01-01")),
+  date_labels = "%d-%m-%Y", 
+  expand = expansion(mult = c(0.015, 0.0025))
+) +
+  #### adjust y axis ####
+scale_y_continuous(
+  breaks = c(-4.0, -2.0,  0.0, 2.0, 6.0,  4.0,  8.0),
+  expand = c(0, 0.5)
+) +
+  #### add custom lines ####
+# add clearly (thickness of 0.5) visible y-axis
+geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=3
+  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
+  # add missing grid line at y=7
+  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
+  # add border for start of adjusted output gap
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for end of adjusted output gap
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  # add border for start of projected data
+  geom_vline(xintercept = as.Date("2025-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  #### fill the area for adjusted output gap ####
+annotate("rect",
+         xmin = as.Date("2020-01-01"),
+         xmax = as.Date("2021-09-30"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightgrey") +
+  #### fill the area for projected data ####
+annotate("rect",
+         xmin = as.Date("2025-01-01"),
+         xmax = as.Date("2027-01-01"),
+         ymin = -Inf, ymax = Inf,
+         alpha = 0.2, fill = "lightpink") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 30),
+    # y-axis font size
+    axis.text.y = element_text(size = 30), 
+    # axis title size
+    axis.title = element_text(size = 30), 
+    # plot title size
+    plot.title = element_text(size = 30, hjust = 0.5),
+  )
+# save plot
+ggsave(
+  filename = "./Plots/taylor_rates.pdf",
+  plot = last_plot(),        
   device = "pdf",
   # plot dimensions (in inches)
   width = 40, height = 8,   
