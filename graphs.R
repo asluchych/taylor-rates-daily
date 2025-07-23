@@ -1,6 +1,83 @@
 ################################################################################
 ####               Taylor Rate, HICP, r* = -0.5 vs deposit rate            #####
 ################################################################################
+
+ggplot(civey_taylor, aes(x = Day)) +
+  #### plot lines with legends via named values in aes() ####
+geom_line(aes(y = tr_hicp_neg0.5, color = "Taylor Rate, r* = -0.5"), size = 2) +
+  geom_line(aes(y = deposit_rate, color = "Deposit Rate"), size = 2) +
+  #### axis labels ####
+labs(x = "Day", y = "Percent", color = NULL) +
+  #### x axis settings ####
+scale_x_date(
+  breaks = as.Date(c("2019-01-01", "2020-01-01", "2021-01-01",
+                     "2022-01-01","2023-01-01", "2024-01-01", "2025-01-01")),
+  date_labels = "%d-%m-%Y", 
+  expand = expansion(mult = c(0.05, 0.03))
+) +
+  #### y axis settings ####
+scale_y_continuous(
+  breaks = c(-2.0, 0.0, 2.0, 4.0, 6.0, 8.0),
+  expand = expansion(mult = c(0.08, 0.14))
+) +
+  
+  #### manual colors for legend items ####
+scale_color_manual(
+  values = c(
+    "Taylor Rate, r* = -0.5" = "blue",
+    "Deposit Rate" = "green"
+    )
+) +
+  
+  #### reference lines and shaded area ####
+geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
+  geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
+  geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  annotate("rect",
+           xmin = as.Date("2020-01-01"),
+           xmax = as.Date("2021-09-30"),
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.2, fill = "lightgrey") +
+
+  #### theme and styling ####
+theme_bw() +
+  theme(
+    panel.border = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 44),
+    axis.text.y = element_text(size = 44), 
+    axis.title = element_text(size = 44), 
+    plot.title = element_text(size = 44, hjust = 0.5),
+    legend.position = c(1, 1),
+    legend.justification = c("right", "top"),
+    legend.text = element_text(size = 44),
+    legend.title = element_text(size = 44)
+  )
+
+# save plot
+ggsave(
+  filename = "./Plots/tr_hicp_neg0.5_vs_deposit_rate.pdf",
+  plot = last_plot(),        
+  device = "pdf",
+  # plot dimensions (in inches)
+  width = 40, height = 15,   
+  # resolution
+  dpi = 300                  
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
 ggplot(civey_taylor, aes(x = Day)) +
   geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 0.5) +
   # add missing grid line at y=3
