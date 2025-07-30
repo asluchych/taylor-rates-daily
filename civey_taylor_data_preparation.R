@@ -1,5 +1,7 @@
 # restrict data to the period of interest
 civey_taylor <- civey_taylor[civey_taylor$Day <= sample.end.date, ]
+taylor_rates_quarterly_to_daily <- taylor_rates_quarterly_to_daily[taylor_rates_quarterly_to_daily$date >= sample.start.date, ]
+taylor_rates_quarterly_to_daily <- taylor_rates_quarterly_to_daily[taylor_rates_quarterly_to_daily$date <= sample.end.date, ]
 
 # dummy variable for females
 civey_taylor$Female <- ifelse(civey_taylor$Gender == "Female", 1, 0)

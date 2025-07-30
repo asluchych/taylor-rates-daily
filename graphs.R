@@ -3,7 +3,8 @@ CM <- TRUE
 # If CM = Yes, load the showtext library
 if (CM == TRUE) {
   library(showtext)
-  font_add(family = "CM", regular = "computer-modern/cmunrm.ttf", italic = "computer-modern/cmunsl.ttf")
+  font_add(family = "CM", regular = "computer-modern/cmunrm.ttf",
+           italic = "computer-modern/cmunsl.ttf")
   showtext_auto()
 }
 
@@ -26,14 +27,15 @@ ggplot(civey_taylor, aes(x = Day)) +
 geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 2) +
   geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
   geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
-  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", 
+             linetype = "dashed", size = 0.5) +
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", 
+             linetype = "dashed", size = 0.5) +
   annotate("rect",
            xmin = as.Date("2020-01-01"),
            xmax = as.Date("2021-09-30"),
            ymin = -Inf, ymax = Inf,
            alpha = 0.2, fill = "lightgrey") +
-  
   #### plot lines with legends via named values in aes() ####
 geom_line(aes(y = tr_hicp_neg0.5, color = "Taylor Rate, r* = -0.5"), size = 2) +
   geom_line(aes(y = deposit_rate, color = "Deposit Rate"), size = 2) +
@@ -51,7 +53,6 @@ scale_y_continuous(
   breaks = c(-2.0, 0.0, 2.0, 4.0, 6.0, 8.0),
   expand = expansion(mult = c(0.08, 0.15))
 ) +
-  
   #### manual colors for legend items ####
 scale_color_manual(
   values = c(
@@ -59,7 +60,6 @@ scale_color_manual(
     "Deposit Rate" = blue
     )
 ) +
-
   #### theme and styling ####
 theme_bw() +
   theme(
@@ -88,7 +88,6 @@ ggsave(
   dpi = 300                  
 )
 
-
 ################################################################################
 ####         Taylor Rate, HICP, r* = -1.5, r* = -0.5, r* = 0.5             #####
 ####                             vs deposit rate                           #####
@@ -104,19 +103,28 @@ ggplot(civey_taylor, aes(x = Day)) +
 geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 2) +
   geom_hline(yintercept = 3, color = "grey90", linetype = "solid", size = 0.5) +
   geom_hline(yintercept = 7, color = "grey90", linetype = "solid", size = 0.5) +
-  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", linetype = "dashed", size = 0.5) +
-  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", linetype = "dashed", size = 0.5) +
+  geom_vline(xintercept = as.Date("2020-01-01"), color = "black", 
+             linetype = "dashed", size = 0.5) +
+  geom_vline(xintercept = as.Date("2021-09-30"), color = "black", 
+             linetype = "dashed", size = 0.5) +
   annotate("rect",
            xmin = as.Date("2020-01-01"),
            xmax = as.Date("2021-09-30"),
            ymin = -Inf, ymax = Inf,
            alpha = 0.2, fill = "lightgrey") +
-  
   #### plot lines with legends via named values in aes() ####
-  geom_line(aes(y = deposit_rate, color = factor("Deposit Rate", levels = legend_order)), size = 2) +
-  geom_line(aes(y = tr_hicp_pos0.5, color = factor("Taylor Rate, r* =   0.5", levels = legend_order)), size = 2) +
-  geom_line(aes(y = tr_hicp_neg0.5, color = factor("Taylor Rate, r* = -0.5", levels = legend_order)), size = 2) +
-  geom_line(aes(y = tr_hicp_neg1.5, color = factor("Taylor Rate, r* = -1.5", levels = legend_order)), size = 2) +
+  geom_line(aes(y = deposit_rate, color = factor("Deposit Rate", 
+                                                  levels = legend_order)),
+                                                  size = 2) +
+  geom_line(aes(y = tr_hicp_pos0.5, color = factor("Taylor Rate, r* =   0.5", 
+                                                    levels = legend_order)), 
+                                                    size = 2) +
+  geom_line(aes(y = tr_hicp_neg0.5, color = factor("Taylor Rate, r* = -0.5",
+                                                    levels = legend_order)), 
+                                                    size = 2) +
+  geom_line(aes(y = tr_hicp_neg1.5, color = factor("Taylor Rate, r* = -1.5", 
+                                                   levels = legend_order)), 
+                                                    size = 2) +
   #### axis labels ####
 labs(x = "Day", y = "Interest Rate, in %", color = NULL) +
   #### x axis settings ####
@@ -131,7 +139,6 @@ scale_y_continuous(
   breaks = c(-2.0, 0.0, 2.0, 4.0, 6.0, 8.0),
   expand = expansion(mult = c(0.08, 0.15))
 ) +
-  
   #### manual colors for legend items ####
 scale_color_manual(
   values = c(
@@ -141,7 +148,6 @@ scale_color_manual(
     "Deposit Rate" = blue
   )
 ) +
-  
   #### theme and styling ####
 theme_bw() +
   theme(
@@ -175,8 +181,8 @@ ggsave(
 ####                    smoothed vs not smoothed                           #####
 ################################################################################
 # define ordering of lines for legend
-legend_order <- c("Taylor Rate, r* =   0.5 (smoothed)",
-                  "Taylor Rate, r* =   0.5 (not smoothed)",
+legend_order <- c("Taylor Rate, r* =  0.5 (smoothed)",
+                  "Taylor Rate, r* =  0.5 (not smoothed)",
                   "Taylor Rate, r* = -0.5 (smoothed)",
                   "Taylor Rate, r* = -0.5 (not smoothed)",
                   "Taylor Rate, r* = -1.5 (smoothed)",
@@ -196,13 +202,29 @@ geom_hline(yintercept = 0, color = "black", linetype = "solid", size = 2) +
            alpha = 0.2, fill = "lightgrey") +
   
   #### plot lines with legends via named values in aes() ####
-  geom_line(aes(y = tr_hicp_neg1.5, color = factor("Taylor Rate, r* = -1.5", levels = legend_order)), size = 2) +
-  geom_line(aes(y = tr_hicp_neg0.5, color = factor("Taylor Rate, r* = -0.5", levels = legend_order)), size = 2) +
-  geom_line(aes(y = tr_hicp_pos0.5, color = factor("Taylor Rate, r* =   0.5", levels = legend_order)), size = 2) +
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_pos0.5), 
-            color = "blue",  size = 1, linetype = 2) +  
-  geom_line(aes(y = taylor_rates_daily_not_smooth$tr_hicp_neg1.5), 
-            color = "orange", size = 1, linetype = 2) +  
+  geom_line(aes(y = tr_hicp_pos0.5, color = factor("Taylor Rate, r* =  0.5 (smoothed)",
+                                                    levels = legend_order)),
+                                                    size = 2) +
+  geom_line(
+    data = taylor_rates_quarterly_to_daily, aes(x = date, y = tr_hicp_pos0.5,
+        color = factor("Taylor Rate, r* =  0.5 (not smoothed)", 
+                       levels = legend_order)),
+                        size = 2, linetype = 2) +
+  geom_line(aes(y = tr_hicp_neg0.5, 
+                color = factor("Taylor Rate, r* = -0.5 (smoothed)",
+                levels = legend_order)), size = 2) +
+  geom_line(data = taylor_rates_quarterly_to_daily,
+            aes(x = date, y = tr_hicp_pos0.5 - 1, 
+                color = factor("Taylor Rate, r* = -0.5 (not smoothed)", 
+                       levels = legend_order)), size = 2, linetype = 2) +
+  geom_line(aes(y = tr_hicp_neg1.5, 
+                color = factor("Taylor Rate, r* = -1.5 (smoothed)",
+                levels = legend_order)),
+                size = 2) +
+  geom_line(data = taylor_rates_quarterly_to_daily,
+            aes(x = date, y = tr_hicp_neg1.5,
+                color = factor("Taylor Rate, r* = -1.5 (not smoothed)", 
+                               levels = legend_order)), size = 2, linetype = 2) +
   #### axis labels ####
 labs(x = "Day", y = "Interest Rate, in %", color = NULL) +
   #### x axis settings ####
@@ -221,13 +243,14 @@ scale_y_continuous(
   #### manual colors for legend items ####
 scale_color_manual(
   values = c(
-    "Taylor Rate, r* = -1.5" = redorange,
-    "Taylor Rate, r* = -0.5" = orange,
-    "Taylor Rate, r* =   0.5" = yellow,
-    "Deposit Rate" = blue
+    "Taylor Rate, r* =  0.5 (smoothed)" = yellow,
+    "Taylor Rate, r* =  0.5 (not smoothed)" = yellow,
+    "Taylor Rate, r* = -0.5 (smoothed)" = orange,
+    "Taylor Rate, r* = -0.5 (not smoothed)" = orange,
+    "Taylor Rate, r* = -1.5 (smoothed)" = redorange,
+    "Taylor Rate, r* = -1.5 (not smoothed)" = redorange
   )
 ) +
-  
   #### theme and styling ####
 theme_bw() +
   theme(
@@ -244,6 +267,23 @@ theme_bw() +
     axis.ticks.length = unit(0.5, "cm"),
     axis.ticks = element_line(size = 1.5)
   )
+
+# save plot
+ggsave(
+  filename = "./Plots/tr_hicp_smoothed_vs_not_smoothed.pdf",
+  plot = last_plot(),        
+  device = "pdf",
+  # plot dimensions (in inches)
+  width = 40, height = 15,   
+  # resolution
+  dpi = 300                  
+)
+
+
+
+
+
+
 
 
 
